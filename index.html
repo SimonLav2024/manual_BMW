@@ -151,7 +151,7 @@ footer{margin-top:80px;padding-top:26px;border-top:1px solid var(--line);color:v
       <div class="badge">Duolever / Paralever</div>
       <div class="badge">ABS integral BMW</div>
     </div>
-    <button class="printbtn" onclick="window.print()">Imprimir / Guardar como PDF</button>
+    <button class="printbtn" onclick="generarPDF()">Descargar / Imprimir PDF</button>
   </div>
 </div>
 
@@ -787,6 +787,22 @@ Trabaja siempre con la moto sobre un caballete estable (central + elevador trase
 <p style="margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-size:.8rem;color:var(--ink-soft);">Realizado por <strong>SLS</strong> · © 2026 · Todos los derechos reservados.</p>
 </footer>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+function generarPDF() {
+  const elemento = document.body;
+  const opciones = {
+    margin: 10,
+    filename: 'Manual_BMW_K1200S_2005.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+  };
+  
+  html2pdf().set(opciones).from(elemento).save();
+}
+</script>
 
 </body>
 </html>
