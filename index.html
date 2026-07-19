@@ -104,13 +104,112 @@ ul.checklist input{width:18px;height:18px;margin-top:2px;accent-color:var(--ambe
 
 footer{margin-top:80px;padding-top:26px;border-top:1px solid var(--line);color:var(--ink-soft);font-size:.85rem;}
 
+/* Sidebar Navigation */
+.wrap:first-of-type {
+  display: grid !important;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+  max-width: 1280px !important;
+  align-items: start;
+}
+
+.sidebar {
+  position: sticky;
+  top: 24px;
+  height: fit-content;
+  display: none;
+}
+
+.sidebar.visible {
+  display: block;
+}
+
+.sidebar nav {
+  background: rgba(42,42,42,.96);
+  border: 1px solid rgba(58,58,58,.75);
+  border-radius: var(--radius);
+  padding: 16px 0;
+  box-shadow: 0 8px 20px rgba(0,0,0,.3);
+  backdrop-filter: blur(6px);
+}
+
+.sidebar nav ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar nav li {
+  margin: 0;
+  border-bottom: 1px solid rgba(58,58,58,.5);
+}
+
+.sidebar nav li:last-child {
+  border-bottom: none;
+}
+
+.sidebar nav a {
+  display: block;
+  padding: 10px 16px;
+  font-size: .85rem;
+  color: var(--ink);
+  text-decoration: none;
+  transition: all .2s ease;
+  border-left: 3px solid transparent;
+}
+
+.sidebar nav a:hover {
+  color: var(--amber);
+  background: rgba(242,165,89,.08);
+  border-left-color: var(--amber);
+  padding-left: 20px;
+}
+
+.sidebar nav a.active {
+  color: var(--amber);
+  background: rgba(242,165,89,.08);
+  border-left-color: var(--amber);
+  font-weight: 600;
+}
+
+.toc-content {
+  grid-column: 2;
+}
+
 @media print{
   .printbtn{display:none;}
   .hero{background:linear-gradient(135deg, rgba(255,189,127,.12) 0%, rgba(143,214,255,.06) 100%) !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .plate{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   section{break-inside:avoid-page;}
 }
+@media (max-width:1200px){
+  .wrap:first-of-type {
+    grid-template-columns: 1fr !important;
+    max-width: 980px !important;
+  }
+  
+  .sidebar {
+    display: none !important;
+  }
+  
+  .toc-content {
+    grid-column: 1 !important;
+  }
+}
+
 @media (max-width:860px){
+  .wrap:first-of-type {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .sidebar {
+    display: none !important;
+  }
+  
+  .toc-content {
+    grid-column: 1 !important;
+  }
+  
   .wrap{padding:0 16px 100px;}
   .hero{padding:44px 18px 34px;}
   .toc{margin-top:-16px;padding:18px 18px;}
@@ -157,7 +256,32 @@ footer{margin-top:80px;padding-top:26px;border-top:1px solid var(--line);color:v
 
 <div class="wrap">
 
-<div class="toc">
+<nav class="sidebar visible">
+  <nav>
+    <ol id="sidebar-toc">
+      <li><a href="#seguridad">00 Seguridad y antes de empezar</a></li>
+      <li><a href="#herramientas">01 Herramientas</a></li>
+      <li><a href="#ficha">02 Ficha técnica</a></li>
+      <li><a href="#pares">03 Pares de apriete</a></li>
+      <li><a href="#cronograma">04 Cronograma</a></li>
+      <li><a href="#carenados">05 Desmontaje de carenados</a></li>
+      <li><a href="#aceite">06 Cambio de aceite</a></li>
+      <li><a href="#bujias">07 Bujías y filtro</a></li>
+      <li><a href="#valvulas">08 Holgura de válvulas</a></li>
+      <li><a href="#tensor">09 Tensor de cadena</a></li>
+      <li><a href="#refrigerante">10 Refrigerante</a></li>
+      <li><a href="#cardan">11 Aceite del cardán</a></li>
+      <li><a href="#frenos">12 Frenos y ABS</a></li>
+      <li><a href="#ruedas">13 Neumáticos y ruedas</a></li>
+      <li><a href="#suspension">14 Suspensión</a></li>
+      <li><a href="#electrico">15 Batería y eléctrico</a></li>
+      <li><a href="#fallos">16 Problemas conocidos</a></li>
+      <li><a href="#checklist">17 Checklist maestro</a></li>
+    </ol>
+  </nav>
+</nav>
+
+<div class="toc-content">
   <h2>Índice</h2>
   <ol>
     <li><a href="#seguridad">Seguridad y antes de empezar</a></li>
@@ -870,7 +994,9 @@ Trabaja siempre con la moto sobre un caballete estable (central + elevador trase
 <div class="danger"><strong>Ultima comprobacion</strong>Antes de circular, confirma que no quede ninguna herramienta, paño o conector suelto en la moto. En frenos, ruedas, direccion y suspension, una duda es motivo para parar y verificar el manual oficial.</div>
 </section>
 
-</div>
+</div><!-- Close toc-content -->
+
+</div><!-- Close wrap -->
 
 <div class="wrap">
 <footer>
@@ -894,6 +1020,35 @@ function generarPDF() {
   
   html2pdf().set(opciones).from(elemento).save();
 }
+
+// Sidebar active link update on scroll
+document.addEventListener('DOMContentLoaded', function() {
+  const sidebarLinks = document.querySelectorAll('.sidebar nav a');
+  const sections = document.querySelectorAll('section[id]');
+  
+  function updateActiveLink() {
+    let current = '';
+    
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.clientHeight;
+      
+      if (window.scrollY >= sectionTop - 200) {
+        current = section.getAttribute('id');
+      }
+    });
+    
+    sidebarLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('active');
+      }
+    });
+  }
+  
+  window.addEventListener('scroll', updateActiveLink);
+  updateActiveLink(); // Initial call
+});
 </script>
 
 </body>
